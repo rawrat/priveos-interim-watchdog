@@ -8,7 +8,7 @@ const { TextEncoder, TextDecoder } = require('util')
 const fetch = require('node-fetch')
 const seconds = 1000
 
-const DEBUG = true
+const DEBUG = false
 let log
 if(DEBUG) {
   log = {
@@ -67,7 +67,7 @@ class Watchdog {
   
   async inner_loop() {
     const nodes = await this.get_nodes()
-    console.log("Node: ", nodes)
+    log.debug("Node: ", nodes)
     for(const node of nodes) {
       await this.handle_node(node)
     }
@@ -78,12 +78,12 @@ class Watchdog {
   
   async handle_node(node) {
     if(await this.is_node_okay(node)) {
-      console.log(`Node ${node.owner} is OKAY`)
+      log.debug(`Node ${node.owner} is OKAY`)
       if(!node.is_active) {
         await this.approve(node)
       }
     } else {
-      console.log(`Node ${node.owner} is NOT okay`)
+      log.debug(`Node ${node.owner} is NOT okay`)
       if(node.is_active) {
         await this.disapprove(node);
       }
