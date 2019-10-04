@@ -8,7 +8,7 @@ const { TextEncoder, TextDecoder } = require('util')
 const fetch = require('node-fetch')
 const seconds = 1000
 
-const DEBUG = false
+const DEBUG = true
 let log
 if(DEBUG) {
   log = {
@@ -27,9 +27,10 @@ const chains = [{
   contract: 'priveosrules',
   watchdog_account: 'slantagpurse',
   watchdog_permission: 'active',
+  chainId: 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
   eos_config: {
-    httpEndpoint: 'http://localhost:8888',
-    keyProvider: ['5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3'],
+    httpEndpoint: 'https://jungle2.cryptolions.io',
+    keyProvider: ['5KXtuBpLc6Y9Q8Q8s8CQm2G7L98bV8PK1ZKnSKvNeoiuhZw6uDH'],
   },
 }, 
 ]
@@ -121,7 +122,7 @@ class Watchdog {
       this.status = 'ok'
       return res
     } catch(e) {
-      log.error(`${this.chain.eos_config.chainId} Error while executing transaction: ${e}`)
+      log.error(`${this.chain.chainId} Error while executing transaction: ${e}`)
       this.status = "error while executing transaction"
       throw e
     }
@@ -129,15 +130,16 @@ class Watchdog {
   
   async is_node_okay(node) {
     const url = new URL('/broker/status/', node.url)
-    log.debug(`${this.chain.eos_config.chainId} Trying ${url.href}`)
+    log.debug(`${this.chain.chainId} Trying ${url.href}`)
     let okay = false
     try {
       const res = await axios.get(url.href)
       const data = res.data
+      log.debug("RES: ", JSON.stringify(data, null, 2))
       const all_chains = data['chains']
       if(all_chains) {
         /* New Format */
-        const this_chain = all_chains.find(x => x.chainId === this.chain.eos_config.chainId)
+        const this_chain = all_chains.find(x => x.chainId === this.chain.chainId)
         if(this_chain && this_chain.status === 'ok') {
           okay = true
         }
@@ -148,7 +150,7 @@ class Watchdog {
         okay = false
       }      
     } catch(e) {
-      log.debug("Exception while trying to connect to node.url")
+      log.debug("Exception while trying to connect to node.url: ", e)
       // log.debug(e)
       okay = false
     }
