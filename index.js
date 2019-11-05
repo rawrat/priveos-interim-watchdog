@@ -73,7 +73,7 @@ class Watchdog {
       await this.handle_node(node)
     }
     if(nodes.length < 10) {
-      await Promise.delay(10*seconds)
+      await Promise.delay(600*seconds)
     }
   }
   
