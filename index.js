@@ -7,6 +7,7 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 const { TextEncoder, TextDecoder } = require('util')
 const fetch = require('node-fetch')
 const seconds = 1000
+const minutes = 60*seconds
 
 const DEBUG = true
 let log
@@ -73,7 +74,7 @@ class Watchdog {
       await this.handle_node(node)
     }
     if(nodes.length < 10) {
-      await Promise.delay(600*seconds)
+      await Promise.delay(30*minutes)
     }
   }
   
